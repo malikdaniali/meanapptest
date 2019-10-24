@@ -56,30 +56,27 @@ module.exports.hotelsGetOne = function (req, res) {
 };
 
 module.exports.hotelsAddOne = function (req, res) {
-    console.log("POST new hotel");
+    
     var db = dbconn.get();
     var collection = db.collection('hotels');
-    var newHotel;
+     var newHotel;
 
-    if (req.body && req.body.name && req.body.stars) {
+    console.log('New Hotel Posted');
+
+    if(req.body && req.body.name && req.body.stars){
+
         newHotel = req.body;
-        newHotel.stars = parseInt(req.body.stars, 10);
-        collection.insertOne(newHotel, function (err, response) {
-            console.log("Hotel added", response);
-            console.log("Hotel added", response.ops);
+        newHotel.stars = parseInt(req.body.stars, 10)
+        console.log(newHotel);
+        collection.insertOne(newHotel, function(err, response){
+            console.log(response);
+            console.log(response.ops);
             res
                 .status(201)
-                .json(response.ops);
+                .json(response.ops);    
         });
-        // console.log(newHotel);
-        // res
-        //   .status(200)
-        //   .json(newHotel);
     } else {
         console.log("Data missing from body");
-        res
-            .status(400)
-            .json({ message: "Required data missing from body" });
+        res.status (200).json({ message : "Required are missing from body"});
     }
-
 };

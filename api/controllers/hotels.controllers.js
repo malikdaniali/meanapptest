@@ -7,6 +7,8 @@ module.exports.hotelsGetAll = function (req, res) {
 
     var db = dbconn.get();
 
+    // console.log("db", db);
+
     console.log('GET the hotels');
     console.log(req.query);
 
@@ -28,7 +30,7 @@ module.exports.hotelsGetAll = function (req, res) {
         .skip(offset)
         .limit(count)
         .toArray(function (err, docs) {
-            console.log("Found hotels", docs);
+            console.log("Found hotels", docs.length);
             res
                 .status(200)
                 .json(docs);
@@ -39,8 +41,7 @@ module.exports.hotelsGetAll = function (req, res) {
 module.exports.hotelsGetOne = function (req, res) {
     var db = dbconn.get();
     var id = req.params.hotelId;
-    var collection = db.collection('hostels');
-
+    var collection = db.collection('hotels');
     console.log('GET hotelId', id);
 
     collection
@@ -53,7 +54,6 @@ module.exports.hotelsGetOne = function (req, res) {
         });
 
 };
-
 
 module.exports.hotelsAddOne = function (req, res) {
     console.log("POST new hotel");

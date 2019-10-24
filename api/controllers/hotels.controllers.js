@@ -1,82 +1,109 @@
-var dbconn = require('../data/dbconnection.js');
-var ObjectId = require('mongodb').ObjectID;
+var mongoose = require('mongoose');
+var Hotel = mongoose.model('Hotel');
 
-var hotelData = require('../data/hotel-data.json');
 
-module.exports.hotelsGetAll = function (req, res) {
+var runGeoQuery = function(req, res) {
 
-    var db = dbconn.get();
+  var lng = parseFloat(req.query.lng);
+  var lat = parseFloat(req.query.lat);
 
-    // console.log("db", db);
+  // A geoJSON point
+  var point = {
+    type : "Point",
+    coordinates : [lng, lat]
+  };
 
-    console.log('GET the hotels');
-    console.log(req.query);
+  var geoOptions = {
+    spherical : true,
+    maxDistance : 2000,
+    num : 5
+  };
 
-    var offset = 0;
-    var count = 5;
-
-    var collection = db.collection('hotels');
-
-    if (req.query && req.query.offset) {
-        offset = parseInt(req.query.offset, 10);
-    }
-
-    if (req.query && req.query.count) {
-        count = parseInt(req.query.count, 10);
-    }
-
-    collection
-        .find()
-        .skip(offset)
-        .limit(count)
-        .toArray(function (err, docs) {
-            console.log("Found hotels", docs.length);
-            res
-                .status(200)
-                .json(docs);
-        });
+  Hotel
+    .geoNear(point, geoOptions, function(err, results, stats) {
+      console.log('Geo Results', results);
+      console.log('Geo stats', stats);
+      res
+        .status(200)
+        .json(results);
+    });
 
 };
 
-module.exports.hotelsGetOne = function (req, res) {
-    var db = dbconn.get();
-    var id = req.params.hotelId;
-    var collection = db.collection('hotels');
-    console.log('GET hotelId', id);
+module.exports.hotelsGetAll = function(req, res) {
 
-    collection
-        .findOne({
-            _id: ObjectId(id)
-        }, function (err, doc) {
-            res
-                .status(200)
-                .json(doc);
-        });
+  console.log('GET the hotels');
+  console.log(req.query);
+
+  var offset = 0;
+  var count = 5;
+
+  if (req.query && req.query.lat && req.query.lng) {
+    runGeoQuery(req, res);
+    return;
+  }
+
+  if (req.query && req.query.offset) {
+    offset = parseInt(req.query.offset, 10);
+  }
+
+  if (req.query && req.query.count) {
+    count = parseInt(req.query.count, 10);
+  }
+
+  Hotel
+    .find()
+    .skip(offset)
+    .limit(count)
+    .exec(function(err, hotels) {
+      console.log("Found hotels", hotels.length);
+      res
+        .json(hotels);
+    });
 
 };
 
-module.exports.hotelsAddOne = function (req, res) {
-    
-    var db = dbconn.get();
-    var collection = db.collection('hotels');
-     var newHotel;
+module.exports.hotelsGetOne = function(req, res) {
+  var id = req.params.hotelId;
+  console.log('GET hotelId', id);
 
-    console.log('New Hotel Posted');
+  Hotel
+    .findById(id)
+    .exec(function(err, doc) {
+      res
+        .status(200)
+        .json(doc);
+    });
 
-    if(req.body && req.body.name && req.body.stars){
+};
 
-        newHotel = req.body;
-        newHotel.stars = parseInt(req.body.stars, 10)
-        console.log(newHotel);
-        collection.insertOne(newHotel, function(err, response){
-            console.log(response);
-            console.log(response.ops);
-            res
-                .status(201)
-                .json(response.ops);    
-        });
-    } else {
-        console.log("Data missing from body");
-        res.status (200).json({ message : "Required are missing from body"});
-    }
+module.exports.hotelsAddOne = function(req, res) {
+  console.log("POST new hotel");
+  var db = dbconn.get();
+  var collection = db.collection('hotels');
+  var newHotel;
+
+  if (req.body && req.body.name && req.body.stars) {
+    newHotel = req.body;
+    newHotel.stars = parseInt(req.body.stars, 10);
+    collection.insertOne(newHotel, function(err, response) {
+      console.log("Hotel added", response);
+      console.log("Hotel added", response.ops);
+      res
+        .status(201)
+        .json(response.ops);
+    });
+    // console.log(newHotel);
+    // res
+    //   .status(200)
+    //   .json(newHotel);
+  } else {
+    console.log("Data missing from body");
+    res
+      .status(400)
+      .json({
+        message: "Required data missing from body"
+      });
+  }
+
 };

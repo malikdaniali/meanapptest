@@ -1,0 +1,24 @@
+<div class="middle">
+    <h1> New Post</h1>
+
+<form ng-hide="vm.message" name="newHotel" ng-submit="vm.newHotel()">
+    <div class="form-group">
+        <label for="name">Title</label>
+        <input type="text" class="form-control" id="name" placeholder="Title" ng-model="vm.name" autocapitalize="none">
+    
+        <label for="address">Title</label>
+        <input type="text" class="form-control" id="address" placeholder="Title" ng-model="vm.address" autocapitalize="none">
+
+        <label for="description">Body</label>
+        <textarea class="form-control" id="address" placeholder="Title" ng-model="vm.description" autocapitalize="none"></textarea>
+
+        <label for="services">Tags</label>
+        <input type="text" class="form-control" id="address" placeholder="Title" ng-model="vm.services" autocapitalize="none">
+
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+    <br>
+    <br>
+</form>
+
+</div>

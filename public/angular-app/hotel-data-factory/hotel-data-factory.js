@@ -13,6 +13,9 @@ function hotelDataFactory($http){
     function hotelDisplay(id){
         return $http.get('/api/hotels/'+id).then(complete).catch(failed);
     }
+    function hotelAdd(hotel){
+        return $http.post('/api/hotels', hotel).then(complete).catch(failed);
+    }
     function complete(response){
         return response.data;
     }

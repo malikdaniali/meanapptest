@@ -8,9 +8,16 @@
     /* Margin bottom by footer height */
     margin-bottom: 90px;
   }
+  .middle{
+    margin-top: 100px !important;  
+  }
   .padded {
     padding-top: 30px
   }
+  .container{
+    padding: 20px 0 0 0;
+  }
+  
   .footer {
     position: absolute;
     bottom: 0;

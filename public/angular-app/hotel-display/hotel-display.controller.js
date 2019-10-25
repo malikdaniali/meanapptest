@@ -22,9 +22,7 @@ vm.addReview = function(){
     };
     if(vm.reviewForm.$valid){
         hotelDataFactory.postReview(id, postData).then(function(response){
-            if(response.status == 200){
-                $route.reload();  
-            } 
+            window.location.reload();
         }).catch(function(error){
             console.log(error);
         });
